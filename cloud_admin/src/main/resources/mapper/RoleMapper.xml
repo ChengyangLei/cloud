@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huont.cloud.admin.system.dao.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huont.cloud.admin.system.entity.Role">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="STATUS" property="status" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="LAST_UPDATE_TIME" property="lastUpdateTime" />
+        <result column="LAST_UPDATOR" property="lastUpdator" />
+        <result column="DEL_FLAG" property="delFlag" />
+        <result column="TEMP_FLAG" property="tempFlag" />
+        <result column="END_TIME" property="endTime" />
+        <result column="CODE" property="code" />
+        <result column="TYPE" property="type" />
+        <result column="ROLE_GROUP" property="roleGroup" />
+        <result column="EXT_ATTR_TEXT1" property="extAttrText1" />
+        <result column="EXT_ATTR_TEXT2" property="extAttrText2" />
+        <result column="EXT_ATTR_SEL1" property="extAttrSel1" />
+        <result column="EXT_ATTR_SEL2" property="extAttrSel2" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, NAME, STATUS, DESCRIPTION, CREATE_TIME, CREATOR, LAST_UPDATE_TIME, LAST_UPDATOR, DEL_FLAG, TEMP_FLAG, END_TIME, CODE, TYPE, ROLE_GROUP, EXT_ATTR_TEXT1, EXT_ATTR_TEXT2, EXT_ATTR_SEL1, EXT_ATTR_SEL2
+    </sql>
+    <select id="queryUserPaging" resultType="map">
+        select
+        <include refid="Base_Column_List"></include>
+        from H_sys_role  T001 where
+        T001.STATUS = '1'
+        AND T001.DEL_FLAG = '0'
+        <if test="queryM.word != null and queryM.word != ''">
+            AND (
+            T001.NAME LIKE '%' || #{queryM.word} || '%'
+            )
+        </if>
+    </select>
+
+</mapper>

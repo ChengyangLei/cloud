@@ -9,6 +9,7 @@
         <module>cloud_order_api</module>
         <module>cloud_resource_auth_config</module>
         <module>cloud_server_gateway</module>
+        <module>cloud_admin</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

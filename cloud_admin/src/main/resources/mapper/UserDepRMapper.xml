@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huont.cloud.admin.system.dao.UserDepRMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huont.cloud.admin.system.entity.UserDepR">
+        <id column="USER_ID" property="userId"/>
+        <result column="IS_MAJOR" property="isMajor"/>
+        <result column="DEPT_ID" property="deptId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        USER_ID, IS_MAJOR, DEPT_ID
+    </sql>
+
+    <select id="queryUserDeptByUserId" parameterType="map" resultType="map">
+        SELECT T002.ID,
+               T002.CODE,
+               T002.NAME,
+               T001.IS_MAJOR
+          FROM H_SYS_USER_DEP_R T001
+            INNER JOIN H_SYS_DEPARTMENT T002
+            ON T002.ID = T001.DEPT_ID
+          WHERE T001.USER_ID = #{userId}
+            AND T002.STATUS = '1'
+            AND T002.DEL_FLAG = '0'
+    </select>
+
+    <select id="queryUserDeptByUserIds" parameterType="map" resultType="map">
+        SELECT T002.ID,
+               T002.CODE,
+               T002.NAME,
+               T001.IS_MAJOR,
+               T001.USER_ID
+          FROM H_SYS_USER_DEP_R T001
+            INNER JOIN H_SYS_DEPARTMENT T002
+            ON T002.ID = T001.DEPT_ID
+          WHERE 1 = 1
+          <if test="userIds != null and userIds.size() > 0">
+            AND T001.USER_ID IN
+              <foreach item="userId" index="index" collection="userIds" open="(" separator="," close=")">
+                  #{userId}
+              </foreach>
+          </if>
+            AND T002.STATUS = '1'
+            AND T002.DEL_FLAG = '0'
+    </select>
+
+</mapper>

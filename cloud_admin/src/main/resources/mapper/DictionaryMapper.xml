@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huont.cloud.admin.system.dao.DictionaryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huont.cloud.admin.system.entity.Dictionary">
+        <id column="ID" property="id"/>
+        <result column="CODE" property="code"/>
+        <result column="NAME" property="name"/>
+        <result column="ORDER_INDEX" property="orderIndex"/>
+        <result column="STATUS" property="status"/>
+        <result column="PID" property="pid"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+        <result column="LAST_UPDATOR" property="lastUpdator"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+        <result column="VALUE" property="value"/>
+        <result column="LEV" property="lev"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, CODE, NAME, ORDER_INDEX, STATUS, PID, DESCRIPTION, CREATE_TIME, CREATOR, LAST_UPDATE_TIME, LAST_UPDATOR, DEL_FLAG, VALUE, LEV
+    </sql>
+
+    <select id="queryBottomLeafParentInfo" resultType="map">
+        SELECT T005.CODE,
+               T005.ID
+          FROM H_SYS_DICTIONARY T005
+            INNER JOIN (SELECT DISTINCT T003.PID
+              FROM H_SYS_DICTIONARY T003
+                INNER JOIN (SELECT T002.ID
+                  FROM H_SYS_DICTIONARY T002
+                  WHERE T002.ID NOT IN (SELECT DISTINCT T001.PID
+                        FROM H_SYS_DICTIONARY T001
+                        WHERE T001.STATUS = '1'
+                          AND T001.DEL_FLAG = '0')) T004
+                ON T003.ID = T004.ID
+              WHERE T003.STATUS = '1'
+                AND T003.DEL_FLAG = '0') T006
+            ON T005.ID = T006.PID
+          WHERE T005.STATUS = '1'
+            AND T005.DEL_FLAG = '0'
+    </select>
+
+    <select id="queryDictionayInfoById" resultType="map" parameterType="map">
+        SELECT T001.ID,
+                 T001.CODE,
+                 T001.NAME,
+                 T002.NAME AS P_NAME,
+                 T001.ORDER_INDEX,
+                 T001.STATUS,
+                 T001.PID,
+                 T001.DESCRIPTION,
+                 T001.VALUE
+            FROM H_SYS_DICTIONARY T001
+              LEFT JOIN H_SYS_DICTIONARY T002
+              ON T001.PID = T002.ID
+              AND T002.STATUS = '1'
+              AND T002.DEL_FLAG = '0'
+            WHERE T001.STATUS = '1'
+              AND T001.DEL_FLAG = '0'
+              AND T001.ID = #{id}
+    </select>
+
+    <select id="queryDictionary4Paging" resultType="map">
+        SELECT T001.ID,
+                 T001.CODE,
+                 T001.NAME,
+                 T002.NAME AS P_NAME,
+                 T001.ORDER_INDEX,
+                 T001.STATUS,
+                 T001.PID,
+                 T001.DESCRIPTION,
+                 T001.VALUE
+            FROM H_SYS_DICTIONARY T001
+              LEFT JOIN H_SYS_DICTIONARY T002
+              ON T001.PID = T002.ID
+              AND T002.STATUS = '1'
+              AND T002.DEL_FLAG = '0'
+            WHERE T001.STATUS = '1'
+              AND T001.DEL_FLAG = '0'
+              <if test="queryM.word != null and queryM.word != ''">
+                  AND (
+                        T001.NAME LIKE '%' || #{queryM.word} || '%'
+                          OR
+                        T001.CODE LIKE '%' || #{queryM.word} || '%'
+                      )
+              </if>
+              <if test="queryM.ids != null and queryM.ids.size() > 0">
+                AND T001.PID IN
+                  <foreach item="id" index="index" collection="queryM.ids" open="(" separator="," close=")">
+                      #{id}
+                  </foreach>
+              </if>
+            ORDER BY T001.ORDER_INDEX,T002.ORDER_INDEX
+    </select>
+
+</mapper>

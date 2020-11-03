@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huont.cloud.admin.system.dao.OrganizationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huont.cloud.admin.system.entity.Organization">
+        <id column="ID" property="id"/>
+        <result column="CODE" property="code"/>
+        <result column="NAME" property="name"/>
+        <result column="PID" property="pid"/>
+        <result column="DIVISION_ID" property="divisionId"/>
+        <result column="SHORT_NAME" property="shortName"/>
+        <result column="TYPE" property="type"/>
+        <result column="CORPORATION" property="corporation"/>
+        <result column="SPECIALFICATION" property="specialfication"/>
+        <result column="BELONG" property="belong"/>
+        <result column="STATUS" property="status"/>
+        <result column="ORDER_INDEX" property="orderIndex"/>
+        <result column="URL" property="url"/>
+        <result column="EMAIL" property="email"/>
+        <result column="ADDRESS" property="address"/>
+        <result column="ZIP" property="zip"/>
+        <result column="TELEPHONE" property="telephone"/>
+        <result column="FAX" property="fax"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="LAST_UPDATOR" property="lastUpdator"/>
+        <result column="LAST_UPDATE_TIME" property="lastUpdateTime"/>
+        <result column="DEL_FLAG" property="delFlag"/>
+        <result column="LEV" property="lev"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, CODE, NAME, PID, DIVISION_ID, SHORT_NAME, TYPE, CORPORATION, SPECIALFICATION, BELONG, STATUS, ORDER_INDEX, URL, EMAIL, ADDRESS, ZIP, TELEPHONE, FAX, DESCRIPTION, CREATOR, CREATE_TIME, LAST_UPDATOR, LAST_UPDATE_TIME, DEL_FLAG, LEV
+    </sql>
+
+    <select id="queryOrganizationByParentId" resultType="map">
+        SELECT T001.NAME,
+        T001.CODE,
+        T001.DIVISION_ID,
+        T001.TYPE,
+        T001.CORPORATION,
+        T001.SPECIALFICATION,
+        T001.BELONG,
+        T001.STATUS,
+        T001.ORDER_INDEX,
+        T001.DESCRIPTION,
+        T001.SHORT_NAME,
+        T001.URL,
+        T001.EMAIL,
+        T001.ADDRESS,
+        T001.ZIP,
+        T001.TELEPHONE,
+        T001.FAX
+        FROM H_SYS_ORGANIZATION T001
+        WHERE T001.STATUS = '1'
+        AND T001.DEL_FLAG = '0'
+        <if test="queryM.pid != null and queryM.pid != ''">
+            AND T001.PID = #{queryM.pid}
+        </if>
+        <if test="queryM.word != null and queryM.word != ''">
+            AND (T001.NAME LIKE '%' || #{queryM.word} || '%'
+            OR T001.CODE LIKE '%' || #{queryM.word} || '%')
+        </if>
+    </select>
+
+    <select id="queryOrganization4Tree" resultType="map" parameterType="map">
+        SELECT T001.ID,
+        T001.NAME,
+        T001.PID,
+        'ORG' AS TYPE
+        FROM H_SYS_ORGANIZATION T001
+        WHERE T001.STATUS = '1'
+        AND T001.DEL_FLAG = '0'
+        <if test="orgId != null and orgId != ''">
+            AND T001.PID = #{orgId}
+        </if>
+        ORDER BY T001.ORDER_INDEX
+    </select>
+
+</mapper>

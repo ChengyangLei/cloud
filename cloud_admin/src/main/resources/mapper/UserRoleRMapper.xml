@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huont.cloud.admin.system.dao.UserRoleRMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huont.cloud.admin.system.entity.UserRoleR">
+        <result column="USER_ID" property="userId"/>
+        <result column="ROLE_ID" property="roleId"/>
+        <result column="IS_MAJOR" property="isMajor"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        USER_ID, ROLE_ID, IS_MAJOR
+    </sql>
+
+    <select id="queryUserRoleByUserId" parameterType="map" resultType="map">
+        SELECT T002.ID,
+               T002.CODE,
+               T002.NAME,
+               T001.IS_MAJOR
+          FROM H_SYS_USER_ROLE_R T001
+            INNER JOIN H_SYS_ROLE T002
+            ON T002.ID = T001.ROLE_ID
+          WHERE T001.USER_ID = #{userId}
+            AND T002.STATUS = '1'
+            AND T002.DEL_FLAG = '0'
+    </select>
+
+    <select id="queryUserRoleByUserIds" parameterType="map" resultType="map">
+        SELECT T002.ID,
+               T002.CODE,
+               T002.NAME,
+               T001.IS_MAJOR,
+               T001.USER_ID
+          FROM H_SYS_USER_ROLE_R T001
+            INNER JOIN H_SYS_ROLE T002
+            ON T002.ID = T001.ROLE_ID
+          WHERE 1 = 1
+            <if test="userIds != null and userIds.size() > 0">
+                AND T001.USER_ID IN
+                <foreach item="userId" index="index" collection="userIds" open="(" separator="," close=")">
+                    #{userId}
+                </foreach>
+            </if>
+            AND T002.STATUS = '1'
+            AND T002.DEL_FLAG = '0'
+    </select>
+
+
+
+</mapper>

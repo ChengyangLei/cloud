@@ -14,13 +14,13 @@ import java.util.Map;
  * @desc:com.huotn.cloud.order.controller
  * @date:2020-08-19
  */
-//@RestController
-//@RequestMapping("/orders")
+@RestController
+@RequestMapping("/orders")
 public class OrderApiController_v2 {
 
 
-//    @RequestMapping("/create")
-//    @PostMapping
+    @RequestMapping("/create")
+    @PostMapping
     public Object create(@RequestBody Map<String,Object> map, @AuthenticationPrincipal User user){
         System.out.println("user is  "+user.getId());
         return user;
